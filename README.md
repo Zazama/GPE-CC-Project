@@ -23,6 +23,8 @@ It consists of a Spring worker that will auto-deploy the processes and forms on 
 
 After starting the process, a service task will be executed by the worker. It fetches a list of 25 YouTube videos from the official API and formats them to HTML. It then sends the HTML back to Camunda which displays the videos to the user (Note: This might not be an optimal way to store the data, but it's a trade-off to complete the given task. As of now, we don't do anything further with the list, so it does not break functionality).
 
+![Backend List](docs/ClimateChangeGeneratedBackend.jpg)
+
 If the user wants to, they can choose to refresh the list again or end the task.
 
 If the YouTube API fails to fetch the videos, an error event will be send by the worker and the service task will be retried (there is no back-off/retry limit mechanism implemented, careful).
