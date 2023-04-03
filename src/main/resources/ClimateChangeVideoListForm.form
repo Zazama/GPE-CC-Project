@@ -1,0 +1,35 @@
+{
+  "components": [
+    {
+      "text": "=videos.html",
+      "type": "text",
+      "id": "Field_0n3zcy7",
+      "properties": {}
+    },
+    {
+      "values": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        }
+      ],
+      "label": "Refresh?",
+      "type": "radio",
+      "id": "Field_0q3wk0t",
+      "key": "refresh"
+    }
+  ],
+  "type": "default",
+  "id": "ClimateChangeVideoListForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.9.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.18.0",
+  "schemaVersion": 7
+}

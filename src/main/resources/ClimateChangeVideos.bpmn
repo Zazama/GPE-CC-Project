@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1wue93l" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.9.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+  <bpmn:process id="ClimateChangeVideos" name="Climate Change Videos" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1nkw4jw</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_1rujqzz">
+      <bpmn:incoming>Flow_17h1wt6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1nkw4jw" sourceRef="StartEvent_1" targetRef="LoadListFromYouTube" />
+    <bpmn:serviceTask id="LoadListFromYouTube" name="Load list of climate change videos from YouTube" camunda:type="external" camunda:topic="climate-change-list">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_1nkw4jw</bpmn:incoming>
+      <bpmn:incoming>Flow_0l9tz0m</bpmn:incoming>
+      <bpmn:incoming>Flow_1fee1tq</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ey21xn</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:boundaryEvent id="YouTubeAPIError" name="YouTube API Error" attachedToRef="LoadListFromYouTube">
+      <bpmn:outgoing>Flow_1vujtzn</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0j9we7t" errorRef="Error_15ulphn" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_1vujtzn" sourceRef="YouTubeAPIError" targetRef="APIErrorCooldown" />
+    <bpmn:boundaryEvent id="Event_0zi7lcl" attachedToRef="APIErrorCooldown">
+      <bpmn:outgoing>Flow_0l9tz0m</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0exux8s">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT10S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_0l9tz0m" sourceRef="Event_0zi7lcl" targetRef="LoadListFromYouTube" />
+    <bpmn:sequenceFlow id="Flow_1ey21xn" sourceRef="LoadListFromYouTube" targetRef="ListGenerated" />
+    <bpmn:userTask id="ListGenerated" name="List generated" camunda:formRef="ClimateChangeVideoListForm" camunda:formRefBinding="latest">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_1ey21xn</bpmn:incoming>
+      <bpmn:outgoing>Flow_1c3qots</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="RefreshGateway" name="Refresh?">
+      <bpmn:incoming>Flow_1c3qots</bpmn:incoming>
+      <bpmn:outgoing>Flow_1fee1tq</bpmn:outgoing>
+      <bpmn:outgoing>Flow_17h1wt6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1c3qots" sourceRef="ListGenerated" targetRef="RefreshGateway" />
+    <bpmn:sequenceFlow id="Flow_1fee1tq" name="Do refresh" sourceRef="RefreshGateway" targetRef="LoadListFromYouTube">
+      <bpmn:extensionElements />
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{refresh == 'yes'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_17h1wt6" name="Complete task" sourceRef="RefreshGateway" targetRef="Event_1rujqzz">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{refresh != 'yes'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="APIErrorCooldown" name="API Error Cooldown">
+      <bpmn:documentation>There was an error getting the Video list from YouTube. It will be retried in 10 minutes.</bpmn:documentation>
+      <bpmn:incoming>Flow_1vujtzn</bpmn:incoming>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmn:error id="Error_15ulphn" name="YouTube API Error" errorCode="YouTubeAPIError" />
+  <bpmn:signal id="Signal_3qjrohi" name="Signal_3qjrohi" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ClimateChangeVideos">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="209" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1rujqzz_di" bpmnElement="Event_1rujqzz">
+        <dc:Bounds x="1052" y="209" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1spojxp_di" bpmnElement="LoadListFromYouTube">
+        <dc:Bounds x="380" y="187" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0hs9u5z_di" bpmnElement="ListGenerated">
+        <dc:Bounds x="650" y="187" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0xvgyw2_di" bpmnElement="RefreshGateway" isMarkerVisible="true">
+        <dc:Bounds x="885" y="202" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="888" y="259" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ol6rtc_di" bpmnElement="APIErrorCooldown">
+        <dc:Bounds x="380" y="370" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ywqxpo_di" bpmnElement="Event_0zi7lcl">
+        <dc:Bounds x="362" y="392" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1fxp6bc_di" bpmnElement="YouTubeAPIError">
+        <dc:Bounds x="412" y="249" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="398" y="292" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1nkw4jw_di" bpmnElement="Flow_1nkw4jw">
+        <di:waypoint x="215" y="227" />
+        <di:waypoint x="380" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vujtzn_di" bpmnElement="Flow_1vujtzn">
+        <di:waypoint x="430" y="285" />
+        <di:waypoint x="430" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0l9tz0m_di" bpmnElement="Flow_0l9tz0m">
+        <di:waypoint x="362" y="410" />
+        <di:waypoint x="342" y="410" />
+        <di:waypoint x="342" y="227" />
+        <di:waypoint x="380" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ey21xn_di" bpmnElement="Flow_1ey21xn">
+        <di:waypoint x="480" y="227" />
+        <di:waypoint x="650" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1c3qots_di" bpmnElement="Flow_1c3qots">
+        <di:waypoint x="750" y="227" />
+        <di:waypoint x="885" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1fee1tq_di" bpmnElement="Flow_1fee1tq">
+        <di:waypoint x="910" y="202" />
+        <di:waypoint x="910" y="100" />
+        <di:waypoint x="430" y="100" />
+        <di:waypoint x="430" y="187" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="643" y="82" width="55" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_17h1wt6_di" bpmnElement="Flow_17h1wt6">
+        <di:waypoint x="935" y="227" />
+        <di:waypoint x="1052" y="227" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="956" y="209" width="75" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
